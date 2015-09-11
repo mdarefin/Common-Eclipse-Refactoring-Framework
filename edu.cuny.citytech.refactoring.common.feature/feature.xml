@@ -2,7 +2,7 @@
 <feature
       id="edu.cuny.citytech.refactoring.common.feature"
       label="Common Refactoring Framework"
-      version="1.1.0.qualifier"
+      version="1.5.0.qualifier"
       provider-name="New York City College of Technology, City University of New York"
       plugin="edu.cuny.citytech.refactoring.common.core">
 
@@ -14,7 +14,7 @@
       Copyright 2015 Raffi Khatchadourian. All rights reserved.
    </copyright>
 
-   <license url="http://www.example.com/license">
+   <license url="">
       Eclipse Public License - v 1.0
 
 THE ACCOMPANYING PROGRAM IS PROVIDED UNDER THE TERMS OF THIS ECLIPSE PUBLIC LICENSE (&quot;AGREEMENT&quot;). ANY USE, REPRODUCTION OR DISTRIBUTION OF THE PROGRAM CONSTITUTES RECIPIENT&apos;S ACCEPTANCE OF THIS AGREEMENT.
@@ -85,7 +85,10 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <import plugin="org.eclipse.equinox.registry"/>
       <import plugin="org.eclipse.ui.workbench"/>
       <import plugin="org.eclipse.osgi"/>
-      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.core.runtime" version="3.11.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jdt.ui.tests.refactoring"/>
+      <import plugin="org.junit"/>
+      <import plugin="org.eclipse.jdt.core"/>
    </requires>
 
    <plugin
@@ -97,6 +100,13 @@ This Agreement is governed by the laws of the State of New York and the intellec
 
    <plugin
          id="edu.cuny.citytech.refactoring.common.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="edu.cuny.citytech.refactoring.common.tests"
          download-size="0"
          install-size="0"
          version="0.0.0"

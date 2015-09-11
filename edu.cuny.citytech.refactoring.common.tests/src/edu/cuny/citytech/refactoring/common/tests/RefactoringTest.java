@@ -11,8 +11,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
-
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
@@ -50,9 +51,11 @@ public abstract class RefactoringTest extends org.eclipse.jdt.ui.tests.refactori
 	/**
 	 * Returns the refactoring to be tested.
 	 * @param methods The methods to refactor.
+	 * @param cu The compilation unit being tested. Can be null.
 	 * @return The refactoring to be tested.
+	 * @throws JavaModelException 
 	 */
-	protected abstract Refactoring getRefactoring(IMethod... methods); 	// TODO: Should use createRefactoring().
+	protected abstract Refactoring getRefactoring(IMethod... methods) throws JavaModelException; 	// TODO: Should use createRefactoring().
 
 	/*
 	 * (non-Javadoc)
@@ -70,6 +73,19 @@ public abstract class RefactoringTest extends org.eclipse.jdt.ui.tests.refactori
 		Path absolutePath = path.toAbsolutePath();
 		byte[] encoded = Files.readAllBytes(absolutePath);
 		return new String(encoded, Charset.defaultCharset());
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.ui.tests.refactoring.RefactoringTest#createCUfromTestFile(org.eclipse.jdt.core.IPackageFragment, java.lang.String)
+	 */
+	@Override
+	protected ICompilationUnit createCUfromTestFile(IPackageFragment pack, String cuName) throws Exception {
+		ICompilationUnit unit = super.createCUfromTestFile(pack, cuName);
+		
+		if (!unit.isStructureKnown())
+			throw new IllegalArgumentException(cuName + " has structural errors.");
+		else
+			return unit;
 	}
 
 	private void helperFail(String typeName, String outerMethodName, String[] outerSignature, String innerTypeName,
@@ -132,13 +148,21 @@ public abstract class RefactoringTest extends org.eclipse.jdt.ui.tests.refactori
 		helperFail("A", null, null, null, methodNames, signatures);
 	}
 
+	/**
+	 * Check for failed preconditions for the case where there is no input.
+	 * @throws Exception
+	 */
+	protected void helperFail() throws Exception {
+		helperFail("A", null, null);
+	}
+
 	protected void helperPass(String[] methodNames, String[][] signatures) throws Exception {
 		ICompilationUnit cu = createCUfromTestFile(getPackageP(), "A");
 		IType type = getType(cu, "A");
 		IMethod[] methods = getMethods(type, methodNames, signatures);
 	
 		Refactoring refactoring = getRefactoring(methods);
-	
+		
 		RefactoringStatus initialStatus = refactoring.checkInitialConditions(new NullProgressMonitor());
 		getLogger().info("Initial status: " + initialStatus);
 	
